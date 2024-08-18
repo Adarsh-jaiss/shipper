@@ -28,8 +28,15 @@ kubectl get pods --all-namespaces
 kubectl config view
 
 # Apply all YAML files in the kubernetes directory
+# use for manual path providng : for file in ${path.module}/kubernetes/shiper-build/*.yaml
 echo "Applying Kubernetes resources..."
-for file in ${path.module}/kubernetes/*.yaml
+for file in /home/adarsh/myfiles/shipper/scripts/AKS/kubernetes/*.yaml
+do
+    echo "Applying $file"
+    kubectl apply -f "$file"
+done
+
+for file in /home/adarsh/myfiles/shipper/scripts/shiper-build/*.yaml
 do
     echo "Applying $file"
     kubectl apply -f "$file"
