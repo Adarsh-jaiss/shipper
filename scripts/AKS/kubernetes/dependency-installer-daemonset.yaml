@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: dependency-installer
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      name: dependency-installer
+  template:
+    metadata:
+      labels:
+        name: dependency-installer
+    spec:
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      containers:
+      - name: installer
+        image: ubuntu:20.04
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          apt-get update
+          apt-get install -y curl wget git vim unzip htop homebrew
+          # Install Azure CLI
+          curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+          # Download jQuery
+          wget https://code.jquery.com/jquery-3.6.0.min.js
+          # Add more installation commands here
+        securityContext:
+          privileged: true
+      terminationGracePeriodSeconds: 30

@@ -77,3 +77,23 @@ resource "azurerm_log_analytics_workspace" "aks" {
   sku                 = "PerGB2018"
   retention_in_days   = 30
 }
+
+# Script to install dependencies using azure CLI
+resource "null_resource" "apply_kubernetes_resources" {
+  depends_on = [
+    azurerm_kubernetes_cluster.aks,
+    azurerm_kubernetes_cluster_node_pool.additional
+  ]
+  provisioner "local-exec" {
+    command = <<EOT
+      chmod +x ${path.module}/apply_k8s_resources.sh
+      kubectl apply -f ${path.module}/kubernetes/dependency-installer-daemonset.yaml &&
+      ${path.module}/apply_k8s_resources.sh
+    EOT
+    
+    environment = {
+      RESOURCE_GROUP = azurerm_resource_group.aks_rg.name
+      CLUSTER_NAME   = azurerm_kubernetes_cluster.aks.name
+    }
+  }
+}

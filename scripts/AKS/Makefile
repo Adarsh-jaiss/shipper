@@ -4,9 +4,11 @@ init:
 	@terraform init
 
 plan:
+	@terraform init -upgrade
 	@terraform plan
 
 apply:
+	
 	@terraform apply -auto-approve
 
 output:

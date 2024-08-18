@@ -9,9 +9,9 @@
 
 ### Setting up AKS --> (Then automating)
 
-- Create a new AKS service
-- Find a way to use in terminal
-- Install dependencies manually 
+[x] Create a new AKS service with terafform
+[x] Find a way to use in terminal
+[ ] Install dependencies manually 
   - shipwright 
   - Build strtegies
   - JQ
@@ -70,8 +70,6 @@
 
     ```bash
     az account set --subscription <your-subscription-id>
-    az role assignment create --assignee "c4af0fd7-4ef8-44f2-9bb2-1057c205a6ea" --role Owner --scope /subscriptions/"96bd1c1a-4586-4b61-af0b-b18f3eb919d5"
-
 
     az ad sp create-for-rbac --name <service-principal-name> --role Contributor --scopes /subscriptions/<subscription-id>
     ```
