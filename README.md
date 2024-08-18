@@ -10,8 +10,10 @@
 ### Setting up AKS --> (Then automating)
 
 [x] Create a new AKS service with terafform
+
 [x] Find a way to use in terminal
-[ ] Install dependencies manually 
+
+[x] Install dependencies manually 
   - shipwright 
   - Build strtegies
   - JQ
