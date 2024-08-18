@@ -14,9 +14,12 @@
 [x] Find a way to use in terminal
 
 [x] Install dependencies manually 
+  - ubuntu
+  - curl,wget, homebrew, azure cli
+  - JQ
   - shipwright 
   - Build strtegies
-  - JQ
+
   - Tekton
 
 ### Building API's

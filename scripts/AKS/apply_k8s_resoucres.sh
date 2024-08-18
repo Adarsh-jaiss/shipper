@@ -7,13 +7,25 @@ set -e
 echo "Logging into Azure..."
 az login --identity
 
+az aks install-cli
+
+# Install Docker (if not already installed)
+if ! command -v docker &> /dev/null; then
+    curl -fsSL https://get.docker.com -o get-docker.sh
+    sudo sh get-docker.sh
+    sudo usermod -aG docker $USER
+fi
+
 # Get AKS credentials
 echo "Getting AKS credentials..."
 az aks get-credentials --resource-group ${RESOURCE_GROUP} --name ${CLUSTER_NAME} --overwrite-existing
 
 # Verify connection to the cluster
 echo "Verifying connection to the cluster..."
+kubectl cluster-info
 kubectl get nodes
+kubectl get pods --all-namespaces
+kubectl config view
 
 # Apply all YAML files in the kubernetes directory
 echo "Applying Kubernetes resources..."
