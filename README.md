@@ -7,7 +7,7 @@
 ## Tasks :
 
 
-### Setting up AKS --> (Then automating)
+### Setting up AKS --> (Then automating) --> DONE!!!
 
 [x] Create a new AKS service with terafform
 
@@ -19,8 +19,11 @@
   - JQ
   - shipwright 
   - Build strtegies
-
   - Tekton
+
+### Setting up build and build run
+
+- Look for a way to parse the user request and add it to the required values in build and build run.
 
 ### Building API's
 
@@ -97,3 +100,12 @@
     Get cluster info: kubectl cluster-info
     View the configuration: kubectl config view 
   ```
+
+
+
+
+
+
+# Things to keep in mind while deployment
+
+- remove the hardcoded directory name from the `apply_k8s_resources.sh` file.

@@ -10,7 +10,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   resource_group_name = azurerm_resource_group.aks_rg.name
   dns_prefix          = var.dns_prefix
 
-    default_node_pool {
+  default_node_pool {
     name                = "default"
     node_count          = var.default_node_count
     vm_size             = var.default_node_vm_size
@@ -20,7 +20,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     max_pods            = var.default_node_max_pods
     os_disk_size_gb     = var.default_node_os_disk_size_gb
     type                = "VirtualMachineScaleSets"
-    zones  = [1, 2, 3]
+    zones               = [1, 2, 3]
   }
 
   identity {
@@ -34,13 +34,13 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
 
-   oms_agent {
+  oms_agent {
     log_analytics_workspace_id = azurerm_log_analytics_workspace.aks.id
   }
 
 
 
-   auto_scaler_profile {
+  auto_scaler_profile {
     balance_similar_node_groups      = true
     expander                         = "random"
     max_graceful_termination_sec     = 600
@@ -66,7 +66,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "additional" {
   max_count             = var.additional_node_max_count
   max_pods              = var.additional_node_max_pods
   os_disk_size_gb       = var.additional_node_os_disk_size_gb
-  zones    = [1, 2, 3]
+  zones                 = [1, 2, 3]
 
   tags = var.tags
 }
@@ -87,13 +87,15 @@ resource "null_resource" "apply_kubernetes_resources" {
   provisioner "local-exec" {
     command = <<EOT
       chmod +x ${path.module}/apply_k8s_resources.sh
-      kubectl apply -f ${path.module}/kubernetes/dependency-installer-daemonset.yaml &&
       ${path.module}/apply_k8s_resources.sh
     EOT
-    
     environment = {
-      RESOURCE_GROUP = azurerm_resource_group.aks_rg.name
-      CLUSTER_NAME   = azurerm_kubernetes_cluster.aks.name
+      RESOURCE_GROUP    = azurerm_resource_group.aks_rg.name
+      CLUSTER_NAME      = azurerm_kubernetes_cluster.aks.name
+      REGISTRY_SERVER   = "${env.REGISTRY_SERVER}"
+      REGISTRY_USER     = "${env.REGISTRY_USER}"
+      REGISTRY_PASSWORD = "${env.REGISTRY_PASSWORD}"
+      REGISTRY_EMAIL    = "${env.REGISTRY_EMAIL}"
     }
   }
 }
