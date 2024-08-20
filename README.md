@@ -24,6 +24,7 @@
 ### Setting up build and build run
 
 - Look for a way to parse the user request and add it to the required values in build and build run.
+- Fix buildname issue in BuildRun,
 
 ### Building API's
 

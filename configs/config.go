@@ -1,9 +1,10 @@
 package configs
 
 type PushSecretConfig struct {
-	RegistryUser     string `json:"username"`
-	RegistryPassword string `json:"password"`
-	OwnerEmail       string `json:"email"`
+	RegistryServer   string `json:"registry_server"`
+	RegistryUser     string `json:"registry_user"`
+	RegistryPassword string `json:"registry_password"`
+	RegistryEmail    string `json:"registry_email"`
 }
 
 type BuildConfig struct {
@@ -12,6 +13,20 @@ type BuildConfig struct {
 	BuildRunDeletion bool          `json:"buildRunDeletion"`
 	GithubURl        string        `json:"githubUrl"`
 	BuildStrategy    BuildStrategy `json:"buildStrategy"`
+}
+
+type Build struct {
+	RegistryServer   string     `json:"registry_server"`
+	RegistryUser     string     `json:"registry_user"`
+	RegistryPassword string     `json:"registry_password"`
+	RegistryEmail    string     `json:"registry_email"`
+	BuildName        string     `json:"buildName"`
+	SourceType       SourceType `json:"sourceType"`
+	BuildRunDeletion bool       `json:"buildRunDeletion"`
+	GithubURl        string     `json:"githubUrl"`
+	BuildStrategy    string     `json:"buildStrategy"`
+	ImageName        string     `json:"imageName"`
+	Timeout          string     `json:"timeout"`
 }
 
 type SourceType int
@@ -34,8 +49,7 @@ const (
 )
 
 type BuildRunConfig struct {
-	BuildName BuildConfig `json:"buildName"`
+	BuildName string `json:"buildName"`
 	ImageName string `json:"imageName"`
-	Timeout string `json:"timeout"`
+	Timeout   string `json:"timeout"`
 }
-
