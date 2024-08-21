@@ -1,13 +1,13 @@
 package configs
 
 type Build struct {
-	RegistryServer   string `json:"registry_server"`
-	RegistryUser     string `json:"registry_user"`
-	RegistryPassword string `json:"registry_password"`
-	RegistryEmail    string `json:"registry_email"`
+	RegistryServer   string `json:"registryServer"`
+	RegistryUser     string `json:"registryUser"`
+	RegistryPassword string `json:"registryPassword"`
+	RegistryEmail    string `json:"registryEmail"`
 	BuildName        string `json:"buildName"`
 	SourceType       string `json:"sourceType"`
-	BuildRunDeletion bool   `json:"buildRunDeletion"`
+	BuildRunDeletion string   `json:"buildRunDeletion"`
 	GithubURl        string `json:"githubUrl"`
 	BuildStrategy    string `json:"buildStrategy"`
 	ImageName        string `json:"imageName"`

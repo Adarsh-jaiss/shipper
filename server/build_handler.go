@@ -38,13 +38,11 @@ func BuildHandler(c fiber.Ctx) (error) {
 	os.Setenv("REGISTRY_USER", cfg.RegistryUser)
 	os.Setenv("REGISTRY_PASSWORD", cfg.RegistryPassword)
 	os.Setenv("REGISTRY_EMAIL", cfg.RegistryEmail)
+	
+	fmt.Println("Enviroment variables are setuped correctly", "\n")
 
-	
-	
-	// return c.JSON(cfg)
-	fmt.Println("Enviroment variables are setuped correctly")
 	script()
-
+	// return c.JSON(cfg)
 	return c.JSON(map[string]string{"msg":"container built successful"})
 }
 

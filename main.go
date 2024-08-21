@@ -1,12 +1,12 @@
 package main
 
 import (
-
 	"log"
 
 	"fmt"
 
 	"github.com/adarsh-jaiss/shipper/server"
+	"github.com/gofiber/fiber/v3/middleware/cors"
 	"github.com/gofiber/fiber/v3"
 	"github.com/joho/godotenv"
 )
@@ -21,6 +21,11 @@ func init() {
 func main() {
 	fmt.Println("Running API server...")
 	app := fiber.New()
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"http://localhost:3000"},
+		AllowHeaders: []string{"Origin, Content-Type, Accept"},
+	}))
+
 	app.Post("/build", server.BuildHandler)
 
 	log.Fatal(app.Listen(":8080"))
