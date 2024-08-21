@@ -1,3 +1,4 @@
 .env
 .secrets.txt
 /shipper-ui/
+/config.json

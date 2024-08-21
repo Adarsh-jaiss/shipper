@@ -78,7 +78,6 @@ resource "azurerm_log_analytics_workspace" "aks" {
   retention_in_days   = 30
 }
 
-# Script to install dependencies using azure CLI
 resource "null_resource" "apply_kubernetes_resources" {
   depends_on = [
     azurerm_kubernetes_cluster.aks,
@@ -92,10 +91,10 @@ resource "null_resource" "apply_kubernetes_resources" {
     environment = {
       RESOURCE_GROUP    = azurerm_resource_group.aks_rg.name
       CLUSTER_NAME      = azurerm_kubernetes_cluster.aks.name
-      REGISTRY_SERVER   = "${env.REGISTRY_SERVER}"
-      REGISTRY_USER     = "${env.REGISTRY_USER}"
-      REGISTRY_PASSWORD = "${env.REGISTRY_PASSWORD}"
-      REGISTRY_EMAIL    = "${env.REGISTRY_EMAIL}"
+      REGISTRY_SERVER   = var.REGISTRY_SERVER
+      REGISTRY_USER     = var.REGISTRY_USER
+      REGISTRY_PASSWORD = var.REGISTRY_PASSWORD
+      REGISTRY_EMAIL    = var.REGISTRY_EMAIL
     }
   }
 }
