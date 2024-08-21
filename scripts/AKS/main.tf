@@ -110,6 +110,10 @@ resource "null_resource" "apply_kubernetes_resources" {
       REGISTRY_USER     = var.REGISTRY_USER
       REGISTRY_PASSWORD = var.REGISTRY_PASSWORD
       REGISTRY_EMAIL    = var.REGISTRY_EMAIL
+      AZURE_CLIENT_ID   = var.client_id
+      AZURE_CLIENT_SECRET = var.client_secret
+      AZURE_TENANT_ID   = var.tenant_id
+
     }
   }
 }

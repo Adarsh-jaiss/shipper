@@ -17,12 +17,12 @@ error_handler() {
 # Set the error handler
 trap 'error_handler $LINENO "$BASH_COMMAND"' ERR
 
-
-# Azure login (assumes you're running this on a machine with Azure CLI installed)
-echo "Logging into Azure..."
-az login --identity
-
-az aks install-cli
+echo "Installing dependencies..."
+for file in /home/adarsh/myfiles/shipper/scripts/AKS/kubernetes/*.yaml
+do
+    echo "Applying $file"
+    kubectl apply -f "$file"
+done
 
 # Install Docker (if not already installed)
 if ! command -v docker &> /dev/null; then
@@ -30,6 +30,16 @@ if ! command -v docker &> /dev/null; then
     sudo sh get-docker.sh
     sudo usermod -aG docker $USER
 fi
+
+
+# Azure login (assumes you're running this on a machine with Azure CLI installed)
+echo "Logging into Azure..."
+az login --service-principal --username $AZURE_CLIENT_ID --password $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
+
+echo "User logged in successfully"
+echo "installing aks cli"
+az aks install-cli
+
 
 # Get AKS credentials
 echo "Getting AKS credentials..."
@@ -44,12 +54,7 @@ kubectl config view
 
 # Apply all YAML files in the kubernetes directory
 # use for manual path providng : for file in ${path.module}/kubernetes/shiper-build/*.yaml
-echo "Installing dependencies..."
-for file in /home/adarsh/myfiles/shipper/scripts/AKS/kubernetes/*.yaml
-do
-    echo "Applying $file"
-    kubectl apply -f "$file"
-done
+
 
 echo "installing tekton pipeline"
 kubectl apply --filename https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.50.5/release.yaml
