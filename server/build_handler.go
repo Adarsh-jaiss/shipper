@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"regexp"
 
 	"github.com/adarsh-jaiss/shipper/configs"
 	"github.com/gofiber/fiber/v3"
@@ -32,14 +33,6 @@ func BuildHandler(c fiber.Ctx) error {
 	fmt.Printf("Image Name: %v\n", cfg.ImageName)
 	fmt.Printf("Timeout: %v\n\n", cfg.Timeout)
 
-	// Store the values in environment variables or pass them to the Terraform script
-	// os.Setenv("REGISTRY_SERVER", cfg.RegistryServer)
-	// os.Setenv("REGISTRY_USER", cfg.RegistryUser)
-	// os.Setenv("REGISTRY_PASSWORD", cfg.RegistryPassword)
-	// os.Setenv("REGISTRY_EMAIL", cfg.RegistryEmail)
-
-	// fmt.Println("Enviroment variables are setuped correctly", "\n")
-
 	if err := script(); err != nil {
 		return fmt.Errorf("error running Terraform apply: %v", err)
 	}
@@ -48,19 +41,38 @@ func BuildHandler(c fiber.Ctx) error {
 }
 
 func writeTerraformVarsFile(cfg configs.Build) error {
-	// Read the existing contents of the terraform.tfvars file
-	existingContent, err := os.ReadFile("terraform.tfvars")
-	if err != nil && !os.IsNotExist(err) {
-		return fmt.Errorf("error reading terraform.tfvars file: %v", err)
-	}
+    // Read the existing contents of the terraform.tfvars file
+    existingContent, err := os.ReadFile("terraform.tfvars")
+    if err != nil && !os.IsNotExist(err) {
+        return fmt.Errorf("error reading terraform.tfvars file: %v", err)
+    }
 
-	// Append the new values to the existing content
-	newContent := fmt.Sprintf("%sREGISTRY_SERVER = %q\nREGISTRY_USER = %q\nREGISTRY_PASSWORD = %q\nREGISTRY_EMAIL = %q\n",
-		existingContent, cfg.RegistryServer, cfg.RegistryUser, cfg.RegistryPassword, cfg.RegistryEmail)
+    // Convert the file content to a string
+    contentStr := string(existingContent)
 
-	// Write the updated content to the terraform.tfvars file
-	return os.WriteFile("terraform.tfvars", []byte(newContent), 0644)
+    // Update or add the variables
+    contentStr = updateOrAddTerraformVariable(contentStr, "REGISTRY_SERVER", cfg.RegistryServer)
+    contentStr = updateOrAddTerraformVariable(contentStr, "REGISTRY_USER", cfg.RegistryUser)
+    contentStr = updateOrAddTerraformVariable(contentStr, "REGISTRY_PASSWORD", cfg.RegistryPassword)
+    contentStr = updateOrAddTerraformVariable(contentStr, "REGISTRY_EMAIL", cfg.RegistryEmail)
+
+    // Write the updated content to the terraform.tfvars file
+    return os.WriteFile("terraform.tfvars", []byte(contentStr), 0644)
 }
+
+func updateOrAddTerraformVariable(content, key, value string) string {
+    // Regular expression to match all occurrences of the variable in the file
+    re := regexp.MustCompile(fmt.Sprintf(`(?m)^\s*%s\s*=\s*".*"$`, key))
+    
+    // Remove all occurrences of the key
+    content = re.ReplaceAllString(content, "")
+    
+    // Append the new key-value pair
+    content += fmt.Sprintf(`%s = "%s"`+"\n", key, value)
+    
+    return content
+}
+
 
 func script() error {
 

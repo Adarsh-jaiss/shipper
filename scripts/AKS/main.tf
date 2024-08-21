@@ -83,11 +83,26 @@ resource "null_resource" "apply_kubernetes_resources" {
     azurerm_kubernetes_cluster.aks,
     azurerm_kubernetes_cluster_node_pool.additional
   ]
+
   provisioner "local-exec" {
     command = <<EOT
-      chmod +x ${path.module}/apply_k8s_resources.sh
-      ${path.module}/apply_k8s_resources.sh
+      # Make the script executable
+      chmod +x ./apply_k8s_resources.sh
+      if [ $? -ne 0 ]; then
+        echo "Failed to set executable permission on apply_k8s_resources.sh"
+        exit 1
+      fi
+
+      # Run the script
+      ./apply_k8s_resources.sh
+      if [ $? -ne 0 ]; then
+        echo "Failed to apply Kubernetes resources"
+        exit 1
+      fi
+
+      echo "Kubernetes resources applied successfully"
     EOT
+
     environment = {
       RESOURCE_GROUP    = azurerm_resource_group.aks_rg.name
       CLUSTER_NAME      = azurerm_kubernetes_cluster.aks.name
