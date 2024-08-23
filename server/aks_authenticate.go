@@ -16,7 +16,12 @@ import (
 
 func authenticate() error {
 	// Replace these variables with your actual values
-	
+	tenantID :=  os.Getenv("TENANT_ID")
+	clientID := os.Getenv("CLIENT_ID")
+	clientSecret := os.Getenv("CLIENT_SECRET")
+	subscriptionID := os.Getenv("SUBSCRIPTION_ID")
+	resourceGroupName := os.Getenv("RESOURCE_GROUP_NAME")
+	clusterName := os.Getenv("CLUSTER_NAME")
 
 	// Create a credential object using the client secret
 	cred, err := azidentity.NewClientSecretCredential(tenantID, clientID, clientSecret, nil)
