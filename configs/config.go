@@ -5,9 +5,10 @@ type Build struct {
 	RegistryUser     string `json:"registryUser"`
 	RegistryPassword string `json:"registryPassword"`
 	RegistryEmail    string `json:"registryEmail"`
+	RegistryOrg      string `json:"registryOrg"`
 	BuildName        string `json:"buildName"`
 	SourceType       string `json:"sourceType"`
-	BuildRunDeletion string   `json:"buildRunDeletion"`
+	BuildRunDeletion string `json:"buildRunDeletion"`
 	GithubURl        string `json:"githubUrl"`
 	BuildStrategy    string `json:"buildStrategy"`
 	ImageName        string `json:"imageName"`
