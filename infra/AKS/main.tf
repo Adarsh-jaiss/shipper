@@ -56,20 +56,20 @@ resource "azurerm_kubernetes_cluster" "aks" {
   tags = var.tags
 }
 
-# resource "azurerm_kubernetes_cluster_node_pool" "additional" {
-#   name                  = "additional"
-#   kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
-#   vm_size               = var.additional_node_vm_size
-#   node_count            = var.additional_node_count
-#   enable_auto_scaling   = true
-#   min_count             = var.additional_node_min_count
-#   max_count             = var.additional_node_max_count
-#   max_pods              = var.additional_node_max_pods
-#   os_disk_size_gb       = var.additional_node_os_disk_size_gb
-#   zones                 = [1, 2, 3]
+resource "azurerm_kubernetes_cluster_node_pool" "additional" {
+  name                  = "additional"
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
+  vm_size               = var.additional_node_vm_size
+  node_count            = var.additional_node_count
+  enable_auto_scaling   = true
+  min_count             = var.additional_node_min_count
+  max_count             = var.additional_node_max_count
+  max_pods              = var.additional_node_max_pods
+  os_disk_size_gb       = var.additional_node_os_disk_size_gb
+  zones                 = [1, 2, 3]
 
-#   tags = var.tags
-# }
+  tags = var.tags
+}
 resource "azurerm_log_analytics_workspace" "aks" {
   name                = "${var.cluster_name}-logs"
   location            = azurerm_resource_group.aks_rg.location
@@ -90,16 +90,17 @@ resource "null_resource" "apply_kubernetes_resources" {
       
       echo "Verifying connection to the cluster..."
       kubectl cluster-info
+      kubectl get nodes
     
       echo "Installing dependencies via Daemon set..."
-      for file in /home/adarsh/myfiles/shipper/scripts/AKS/kubernetes/*.yaml
+      for file in /home/adarsh/myfiles/shipper/infra/AKS/kubernetes/*.yaml
       do
           echo "Applying $file"
           kubectl apply -f "$file"
       done
 
       echo "Installing docker"
-      curl -fsSL https://get.docker.com -o get-docker.sh
+      curl -fsSL https://get.docker.com -o install-docker.sh
       cat install-docker.sh
       sh install-docker.sh
       echo "Docker installed"

@@ -16,7 +16,7 @@ import (
 
 func authenticate() error {
 	// Replace these variables with your actual values
-
+	
 
 	// Create a credential object using the client secret
 	cred, err := azidentity.NewClientSecretCredential(tenantID, clientID, clientSecret, nil)

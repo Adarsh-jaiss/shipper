@@ -126,22 +126,22 @@ variable "tenant_id" {
 
 # registry 
 
-variable "REGISTRY_SERVER" {
-  type        = string
-  description = "Registry server address"
-}
+# variable "REGISTRY_SERVER" {
+#   type        = string
+#   description = "Registry server address"
+# }
 
-variable "REGISTRY_USER" {
-  type        = string
-  description = "Registry user"
-}
+# variable "REGISTRY_USER" {
+#   type        = string
+#   description = "Registry user"
+# }
 
-variable "REGISTRY_PASSWORD" {
-  type        = string
-  description = "Registry password"
-}
+# variable "REGISTRY_PASSWORD" {
+#   type        = string
+#   description = "Registry password"
+# }
 
-variable "REGISTRY_EMAIL" {
-  type        = string
-  description = "Registry email"
-}
+# variable "REGISTRY_EMAIL" {
+#   type        = string
+#   description = "Registry email"
+# }
