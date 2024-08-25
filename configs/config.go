@@ -9,10 +9,11 @@ type Build struct {
 	BuildName        string `json:"buildName"`
 	SourceType       string `json:"sourceType"`
 	// BuildRunDeletion bool `json:"buildRunDeletion"`
-	GithubURl        string `json:"githubUrl"`
-	BuildStrategy    string `json:"buildStrategy"`
-	ImageName        string `json:"imageName"`
-	Timeout          string `json:"timeout"`
+	ImgVersion    string `json:"imgVersion"`
+	GithubURl     string `json:"githubUrl"`
+	BuildStrategy string `json:"buildStrategy"`
+	ImageName     string `json:"imageName"`
+	Timeout       string `json:"timeout"`
 }
 
 type SourceType int

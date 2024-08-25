@@ -109,7 +109,6 @@ func CreateBuild() error {
         type: Git
         git:
           url: %s
-        contextDir: source-build
       strategy:
         name: %s
         kind: ClusterBuildStrategy
