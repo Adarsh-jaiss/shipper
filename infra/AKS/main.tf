@@ -119,6 +119,13 @@ resource "null_resource" "apply_kubernetes_resources" {
           retry kubectl apply -f "$file"
       done
 
+      if !jq --version &> /dev/null; then
+      echo "Installing JQ..."
+      sudo wget -O /usr/local/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
+      sudo chmod +x /usr/local/bin/jq
+      jq --version
+      fi
+
       echo "Installing tekton"
       retry kubectl apply --filename https://storage.googleapis.com/tekton-releases/pipeline/previous/v0.50.5/release.yaml
       echo "tekton installed successfully!!!"
@@ -128,8 +135,12 @@ resource "null_resource" "apply_kubernetes_resources" {
           echo "Installing Shipwright..."
           retry kubectl apply --filename https://github.com/shipwright-io/build/releases/download/v0.13.0/release.yaml --server-side
           retry curl --silent --location https://raw.githubusercontent.com/shipwright-io/build/v0.13.0/hack/setup-webhook-cert.sh | bash
-          retry curl --silent --location https://raw.githubusercontent.com/shipwright-io/build/main/hack/storage-version-migration.sh | bash
+          retry kubectl apply --filename https://github.com/shipwright-io/build/releases/download/v0.13.0/sample-strategies.yaml --server-side
+          # retry curl --silent --location https://raw.githubusercontent.com/shipwright-io/build/main/hack/storage-version-migration.sh | bash
       fi
+
+      echo "all dependencies installed successfully!!!"
+      exit
 
     EOT
 

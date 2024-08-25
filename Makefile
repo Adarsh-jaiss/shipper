@@ -9,9 +9,7 @@ run: build
 	@./bin/shipper
 
 # Build and run infrastructure-related code
-infra:
-	@go build -o bin/shipper-infra infra/
-	@./bin/shipper-infra
+
 
 # Push changes to git
 push:

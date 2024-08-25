@@ -8,7 +8,7 @@ type Build struct {
 	RegistryOrg      string `json:"registryOrg"`
 	BuildName        string `json:"buildName"`
 	SourceType       string `json:"sourceType"`
-	BuildRunDeletion string `json:"buildRunDeletion"`
+	// BuildRunDeletion bool `json:"buildRunDeletion"`
 	GithubURl        string `json:"githubUrl"`
 	BuildStrategy    string `json:"buildStrategy"`
 	ImageName        string `json:"imageName"`

@@ -32,7 +32,7 @@ func main() {
 	}
 
 	
-	applyCmd := exec.Command("terraform", "apply", "-auto-approve")
+	applyCmd := exec.Command("terraform", "apply","-lock=false", "-auto-approve")
 
 	applyCmd.Stdout = os.Stdout
 	applyCmd.Stderr = os.Stderr

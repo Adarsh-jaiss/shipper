@@ -14,6 +14,8 @@ import (
 	"k8s.io/client-go/util/homedir"
 )
 
+var KubeconfigPath string
+
 func authenticate() error {
 	// Replace these variables with your actual values
 	tenantID :=  os.Getenv("TENANT_ID")
@@ -23,6 +25,7 @@ func authenticate() error {
 	resourceGroupName := os.Getenv("RESOURCE_GROUP_NAME")
 	clusterName := os.Getenv("CLUSTER_NAME")
 
+	fmt.Println("Authenticating...")
 	// Create a credential object using the client secret
 	cred, err := azidentity.NewClientSecretCredential(tenantID, clientID, clientSecret, nil)
 	if err != nil {
@@ -47,14 +50,14 @@ func authenticate() error {
 	kubeconfig := credentialResults.Kubeconfigs[0].Value
 
 	// Create a unique temporary kubeconfig file to avoid overwriting the default config
-	kubeconfigPath := filepath.Join(homedir.HomeDir(), ".kube", "shipper-aks-config")
-	err = os.WriteFile(kubeconfigPath, kubeconfig, 0644)
+	KubeconfigPath = filepath.Join(homedir.HomeDir(), ".kube", "shipper-aks-config")
+	err = os.WriteFile(KubeconfigPath, kubeconfig, 0644)
 	if err != nil {
 		return fmt.Errorf("failed to write kubeconfig file: %v", err)
 	}
 
 	// Create a Kubernetes client
-	config, err := clientcmd.BuildConfigFromFlags("", kubeconfigPath)
+	config, err := clientcmd.BuildConfigFromFlags("", KubeconfigPath)
 	if err != nil {
 		return fmt.Errorf("failed to build config from flags: %v", err)
 	}
@@ -74,7 +77,7 @@ func authenticate() error {
 		fmt.Printf("Pod Name: %s\n", pod.Name)
 	}
 
-	os.Remove(kubeconfigPath)
+	// os.Remove(kubeconfigPath)
 
 	return nil
 }
