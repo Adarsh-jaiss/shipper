@@ -5,15 +5,14 @@ type Build struct {
 	RegistryUser     string `json:"registryUser"`
 	RegistryPassword string `json:"registryPassword"`
 	RegistryEmail    string `json:"registryEmail"`
-	RegistryOrg      string `json:"registryOrg"`
 	BuildName        string `json:"buildName"`
 	SourceType       string `json:"sourceType"`
-	// BuildRunDeletion bool `json:"buildRunDeletion"`
-	ImgVersion    string `json:"imgVersion"`
-	GithubURl     string `json:"githubUrl"`
-	BuildStrategy string `json:"buildStrategy"`
-	ImageName     string `json:"imageName"`
-	Timeout       string `json:"timeout"`
+	ImgTag           string `json:"imgTag"`
+	BuildDir         string `json:"buildDir"`
+	GithubURl        string `json:"githubUrl"`
+	BuildStrategy    string `json:"buildStrategy"`
+	ImageName        string `json:"imageName"`
+	Timeout          string `json:"timeout"`
 }
 
 type SourceType int
