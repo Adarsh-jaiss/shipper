@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shipper
+  namespace: shipper-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: shipper
+  template:
+    metadata:
+      labels:
+        app: shipper
+    spec:
+      serviceAccountName: shipper-sa
+      containers:
+      - name: shipper
+        image: adarshjaiss/shipper:latest
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: shipper-config
+        - secretRef:
+            name: shipper-secrets
+        resources:
+          requests:
+            cpu: 300m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        # readinessProbe:
+        #   httpGet:
+        #     path: /healthz
+        #     port: 8080
+        #   initialDelaySeconds: 10
+        #   periodSeconds: 5
+        # livenessProbe:
+        #   httpGet:
+        #     path: /healthz
+        #     port: 8080
+        #   initialDelaySeconds: 15
+        #   periodSeconds: 10

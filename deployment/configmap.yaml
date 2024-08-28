@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shipper-config
+  namespace: shipper-backend
+data:
+  KUBERNETES_SERVICE_HOST: "kubernetes.default.svc"
+  KUBERNETES_SERVICE_PORT: "443"
