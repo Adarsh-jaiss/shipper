@@ -55,6 +55,11 @@ kubectl describe clusterissuer letsencrypt-prod
 kubectl apply -f encrypt-issuer.yaml
 kubectl get certificate -n shipper-backend
 
+kubectl create secret generic shipper-tls-cert \
+  --namespace=shipper-backend \
+  --from-file=tls.crt=tls.crt \
+  --from-file=tls.key=tls.key
+
 
 # or use Node Port
 
@@ -71,5 +76,12 @@ kubectl get challenges -n shipper-backend
 kubectl exec -n shipper-backend shipper-6b6ffcf886-27fvc -- curl http://shipper:80/build
 
 
+openssl req -new -newkey rsa:2048 -nodes -keyout shipper0.key -out shipper0.csr
+
 
 ```
+
+
+https://cert-manager.io/docs/usage/ingress/
+
+https://cert-manager.io/docs/installation/helm/

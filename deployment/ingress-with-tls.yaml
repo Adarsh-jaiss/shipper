@@ -4,18 +4,18 @@ metadata:
   name: shipper-ingress
   namespace: shipper-backend
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod" # Add this line
+    cert-manager.io/cluster-issuer: "letsencrypt" # Add this line
 spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - shipper0.tech
-      secretName: shipper-tls-cert 
+        - api.shipper0.tech
+      secretName: tls-cert
   rules:
-    - host: shipper0.tech
+    - host: api.shipper0.tech
       http:
         paths:
           - path: /

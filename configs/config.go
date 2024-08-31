@@ -6,7 +6,7 @@ type Build struct {
 	RegistryPassword string `json:"registryPassword"`
 	RegistryEmail    string `json:"registryEmail"`
 	BuildName        string `json:"buildName"`
-	SourceType       string `json:"sourceType"`
+	// SourceType       string `json:"sourceType"`
 	ImgTag           string `json:"imgTag"`
 	BuildDir         string `json:"buildDir"`
 	GithubURl        string `json:"githubUrl"`
@@ -14,22 +14,3 @@ type Build struct {
 	ImageName        string `json:"imageName"`
 	Timeout          string `json:"timeout"`
 }
-
-type SourceType int
-
-const (
-	Git SourceType = iota + 1
-	Dockerfile
-)
-
-type BuildStrategy int
-
-const (
-	BuildKit BuildStrategy = iota + 1
-	kanio
-	Buildah
-	Buildpacks_V3
-	Buildpacks_V3_Heroku
-	Ko
-	SourceToImage
-)

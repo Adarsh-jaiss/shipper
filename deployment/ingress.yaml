@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: api.shipper0.tech
+  - host: buildapi.shipper0.tech
     http:
       paths:
       - path: /

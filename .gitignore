@@ -1,5 +1,6 @@
 .env
 .secrets.txt
+.dp.tct
 .temp-readme.txt
 /shipper-ui/
 /config.json
