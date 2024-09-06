@@ -1,4 +1,4 @@
-# Shipper (Not to use --> In Developement stage)
+# Shipper
 
 Shipper is an internal developer platform designed to simplify the process of building and pushing container images. With Shipper, developers can create container images without the need to write or manage Dockerfiles and automatically pushing it to the container registry(such as docker hub or quay, etc)
 
