@@ -5,7 +5,7 @@ import (
 
 	"fmt"
 
-	"github.com/adarsh-jaiss/shipper/server"
+	"github.com/adarsh-jaiss/shipper/native-server"
 	"github.com/gofiber/fiber/v3/middleware/cors"
 	"github.com/gofiber/fiber/v3"
 	"github.com/joho/godotenv"
@@ -27,7 +27,7 @@ func main() {
 		AllowHeaders: []string{"Origin, Content-Type, Accept, Methods"},
 	}))
 
-	app.Post("/build", server.BuildHandler)
+	app.Post("/build", native_server.BuildHandler)
 
 	log.Fatal(app.Listen(":8080"))
 }
