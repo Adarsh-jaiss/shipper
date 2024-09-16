@@ -33,7 +33,7 @@ func BuildHandler(c fiber.Ctx) error {
 	fmt.Printf("Image Name: %v\n", cfg.ImageName)
 	fmt.Printf("Timeout: %v\n\n", cfg.Timeout)
 	cfg.Namespace = "Shipper-users"
-	fmt.Println("Namespace: %v\n", cfg.Namespace)
+	fmt.Printf("Namespace: %v\n", cfg.Namespace)
 
 	// // Authenticate and get Kubernetes client
 	kubeClient, err := Authenticate()
