@@ -14,6 +14,8 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
+
+
 func CreateDockerRegistrySecret(kubeClient *kubernetes.Clientset, cfg configs.Build) error {
 	secretName := "push-secret"
 
@@ -41,7 +43,7 @@ func CreateDockerRegistrySecret(kubeClient *kubernetes.Clientset, cfg configs.Bu
 		},
 	}
 
-	_, err = kubeClient.CoreV1().Secrets(cfg.Namespace).Create(context.TODO(), secret, metav1.CreateOptions{})
+	secret, err = kubeClient.CoreV1().Secrets(cfg.Namespace).Create(context.TODO(), secret, metav1.CreateOptions{})
 	if err != nil {
 		return fmt.Errorf("error creating Docker registry secret: %v", err)
 	}
@@ -53,53 +55,58 @@ func CreateDockerRegistrySecret(kubeClient *kubernetes.Clientset, cfg configs.Bu
 
 
 func CreateBuild(kubeClient *kubernetes.Clientset, shipClient *shipclient.Clientset, cfg configs.Build) error {
-	// Check if build exists and delete if it does
-	if err := deleteBuildIfExists(shipClient, cfg.BuildName, cfg.Namespace); err != nil {
-		return fmt.Errorf("error handling existing build: %v", err)
-	}
+    // Check if build exists and delete if it does
+	 secretName := "push-secret"
+	 
 
-	fmt.Println("Creating build..")
+    if err := deleteBuildIfExists(shipClient, cfg.BuildName, cfg.Namespace); err != nil {
+        return fmt.Errorf("error handling existing build: %v", err)
+    }
 
-	// Convert timeout string to time.Duration
-	timeout, err := time.ParseDuration(cfg.Timeout)
-	if err != nil {
-		return fmt.Errorf("invalid timeout format: %v", err)
-	}
+    fmt.Println("Creating build..")
 
-	var kindtype buildv1beta1.Strategy
+    timeout, err := time.ParseDuration(cfg.Timeout)
+    if err != nil {
+        return fmt.Errorf("invalid timeout format: %v", err)
+    }
 
-	build := &buildv1beta1.Build{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      cfg.BuildName,
-			Namespace: cfg.Namespace,
-		},
-		Spec: buildv1beta1.BuildSpec{
-			Source: &buildv1beta1.Source{
-				Type: buildv1beta1.GitType,
-				Git: &buildv1beta1.Git{
-					URL: cfg.GithubURl,
-				},
-				ContextDir: &cfg.BuildDir,
-			},
-			Strategy: buildv1beta1.Strategy{
-				Name: cfg.BuildStrategy,
-				Kind: kindtype.Kind ,
-			},
-			Output: buildv1beta1.Image{
-				Image: fmt.Sprintf("docker.io/%s/%s:%s", cfg.RegistryUser, cfg.ImageName, cfg.ImgTag),
-			},
-			Timeout: &metav1.Duration{Duration: timeout},
-		},
-	}
+    var kindtype buildv1beta1.BuildStrategyKind = buildv1beta1.ClusterBuildStrategyKind
 
-	_, err = shipClient.ShipwrightV1beta1().Builds(cfg.Namespace).Create(context.TODO(), build, metav1.CreateOptions{})
-	if err != nil {
-		return fmt.Errorf("error creating build: %v", err)
-	}
+    build := &buildv1beta1.Build{
+        ObjectMeta: metav1.ObjectMeta{
+            Name:      cfg.BuildName,
+            Namespace: cfg.Namespace,
+        },
+        Spec: buildv1beta1.BuildSpec{
+            Source: &buildv1beta1.Source{
+                Type: buildv1beta1.GitType,
+                Git: &buildv1beta1.Git{
+                    URL: cfg.GithubURl,
+                },
+                ContextDir: &cfg.BuildDir,
+            },
+            Strategy: buildv1beta1.Strategy{
+                Name: cfg.BuildStrategy,
+                Kind: &kindtype,
+            },
+            Output: buildv1beta1.Image{
+                Image:      fmt.Sprintf("docker.io/%s/%s:%s", cfg.RegistryUser, cfg.ImageName, cfg.ImgTag),
+				PushSecret: &secretName,
+            },
+            Timeout: &metav1.Duration{Duration: timeout},
+        },
+    }
 
-	fmt.Println("BUILD APPLIED")
-	fmt.Println("build created!!!")
-	return nil
+    fmt.Printf("%+v", build)
+
+    _, err = shipClient.ShipwrightV1beta1().Builds(cfg.Namespace).Create(context.TODO(), build, metav1.CreateOptions{})
+    if err != nil {
+        return fmt.Errorf("error creating build: %v", err)
+    }
+
+    fmt.Println("BUILD APPLIED")
+    fmt.Println("build created!!!")
+    return nil
 }
 
 func deleteBuildIfExists(shipClient *shipclient.Clientset, buildName, namespace string) error {
@@ -127,8 +134,6 @@ func BuildRun(shipClient *shipclient.Clientset, cfg configs.Build) error {
 		return fmt.Errorf("error handling existing buildrun: %v", err)
 	}
 
-	fmt.Println("creating buildrun..")
-
 	buildRun := &buildv1beta1.BuildRun{
 		ObjectMeta: metav1.ObjectMeta{
 			GenerateName: fmt.Sprintf("%s-buildrun-", cfg.BuildName),
@@ -148,6 +153,12 @@ func BuildRun(shipClient *shipclient.Clientset, cfg configs.Build) error {
 	}
 
 	fmt.Printf("BuildRun created with name: %s\n", createdBuildRun.Name)
+
+	// Wait for BuildRun to complete
+	err = waitForBuildRunCompletion(shipClient, createdBuildRun.Name, cfg.Namespace)
+	if err != nil {
+  		return fmt.Errorf("error waiting for buildrun completion: %v", err)
+	}
 	return nil
 }
 
@@ -170,4 +181,27 @@ func deleteBuildRunIfExists(shipClient *shipclient.Clientset, buildName, namespa
 	}
 
 	return nil
+}
+
+func waitForBuildRunCompletion(shipClient *shipclient.Clientset, buildRunName, namespace string) error {
+    fmt.Println("Waiting for BuildRun to complete...")
+    for {
+        buildRun, err := shipClient.ShipwrightV1beta1().BuildRuns(namespace).Get(context.TODO(), buildRunName, metav1.GetOptions{})
+        if err != nil {
+            return fmt.Errorf("error getting buildrun: %v", err)
+        }
+
+        for _, condition := range buildRun.Status.Conditions {
+            if condition.Type == buildv1beta1.Succeeded {
+                if condition.Status == corev1.ConditionTrue {
+                    fmt.Println("BuildRun completed successfully")
+                    return nil
+                } else if condition.Status == corev1.ConditionFalse {
+                    return fmt.Errorf("BuildRun failed: %s", condition.Message)
+                }
+            }
+        }
+
+        time.Sleep(5 * time.Second)
+    }
 }

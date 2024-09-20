@@ -7,11 +7,10 @@ import (
 	"github.com/adarsh-jaiss/shipper/configs"
 	"github.com/gofiber/fiber/v3"
 	shipclient "github.com/shipwright-io/build/pkg/client/clientset/versioned"
-	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
 )
 
 var cfg *configs.Build
-
 
 func BuildHandler(c fiber.Ctx) error {
 	if err := c.Bind().Body(&cfg); err != nil {
@@ -32,7 +31,7 @@ func BuildHandler(c fiber.Ctx) error {
 	fmt.Printf("Build Name: %v\n", cfg.BuildName)
 	fmt.Printf("Image Name: %v\n", cfg.ImageName)
 	fmt.Printf("Timeout: %v\n\n", cfg.Timeout)
-	cfg.Namespace = "Shipper-users"
+	cfg.Namespace = "shipper-users"
 	fmt.Printf("Namespace: %v\n", cfg.Namespace)
 
 	// // Authenticate and get Kubernetes client
@@ -42,11 +41,11 @@ func BuildHandler(c fiber.Ctx) error {
 	}
 	fmt.Println("Connected to AKS cluster")
 
-
 	// Get the current config to create Shipwright client
-	config, err := rest.InClusterConfig()
+	// Use the KubeconfigPath to create the config
+	config, err := clientcmd.BuildConfigFromFlags("", KubeconfigPath)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": fmt.Sprintf("Error getting in-cluster config: %v", err)})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": fmt.Sprintf("Error building config from kubeconfig: %v", err)})
 	}
 
 	// Create Shipwright client
@@ -81,9 +80,14 @@ func BuildHandler(c fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": fmt.Sprintf("Error creating build: %v", err)})
 	}
 
+	if err := BuildRun(shipClient, configs.Build{
+		BuildName: cfg.BuildName,
+		Namespace: cfg.Namespace,
+	}); err!= nil{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": fmt.Sprintf("Error creating buildrun: %v", err)})
+	}
+
 	os.Remove(KubeconfigPath)
 
 	return c.JSON(map[string]string{"msg": "container built successfully"})
 }
-
-
