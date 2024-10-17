@@ -1,4 +1,4 @@
-package native_server
+package server
 
 import (
 	"fmt"
@@ -18,6 +18,7 @@ func BuildHandler(c fiber.Ctx) error {
 	}
 
 	fmt.Printf("REGISTRY_SERVER: %v\n", cfg.RegistryServer)
+	cfg.RegistryServer = "https://index.docker.io/v1/"
 	fmt.Printf("REGISTRY_USER : %v\n", cfg.RegistryUser)
 	fmt.Printf("REGISTRY_PASSWORD: %v\n", cfg.RegistryPassword)
 	fmt.Printf("REGISTRY_EMAIL: %v\n", cfg.RegistryEmail)

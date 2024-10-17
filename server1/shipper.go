@@ -1,4 +1,4 @@
-package native_server
+package server
 
 import (
 	"context"

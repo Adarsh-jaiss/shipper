@@ -1,4 +1,4 @@
-package native_server
+package server
 
 import (
 	"context"
@@ -11,12 +11,11 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/client-go/util/homedir"
 )
 
 var KubeconfigPath string
 
-func Authenticate() ( *kubernetes.Clientset ,error) {
+func Authenticate() (*kubernetes.Clientset, error) {
 	// Replace these variables with your actual values
 	tenantID :=  os.Getenv("TENANT_ID")
 	clientID := os.Getenv("CLIENT_ID")
@@ -50,8 +49,14 @@ func Authenticate() ( *kubernetes.Clientset ,error) {
 
 	kubeconfig := credentialResults.Kubeconfigs[0].Value
 
-	// Create a unique temporary kubeconfig file to avoid overwriting the default config
-	KubeconfigPath = filepath.Join(homedir.HomeDir(), ".kube", "shipper-aks-config")
+
+	// Create a temporary directory for the kubeconfig file
+	tempDir, err := os.MkdirTemp("", "kube")
+	if err != nil {
+		return nil, fmt.Errorf("failed to create temp directory: %v", err)
+	}
+	KubeconfigPath = filepath.Join(tempDir, "config")
+
 	err = os.WriteFile(KubeconfigPath, kubeconfig, 0644)
 	if err != nil {
 		return nil, fmt.Errorf("failed to write kubeconfig file: %v", err)
